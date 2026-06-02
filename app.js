@@ -26,7 +26,13 @@ require([
 
     // ---- Address labels: only at 1:1500 or more zoomed in ----
     propertyLayer.labelingInfo = [{
-        labelExpressionInfo: { expression: "$feature.ADDRESS" },
+        labelExpressionInfo: {
+            expression: `
+                var addr = Trim($feature.ADDRESS);
+                if (IsEmpty(addr) || addr == 'None None') { return ''; }
+                return addr;
+            `
+        },
         symbol: {
             type: "text",
             color: [50, 50, 50],
