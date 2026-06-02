@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, width=device-width" />
+  <title>CityTwin Flood Scenarios</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.32/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.32/"></script>
+  <style>
+    html, body, #viewDiv { padding: 0; margin: 0; height: 100%; width: 100%; }
+    #scenarioPanel { padding: 10px 12px; max-width: 240px; }
+    #scenarioPanel label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; color: #323232; }
+    #scenarioPanel select { width: 100%; padding: 6px; font-size: 13px; }
+    #scenarioStatus { margin-top: 8px; font-size: 12px; color: #6e6e6e; }
+  </style>
+</head>
+<body>
+  <div id="viewDiv"></div>
+
+  <!-- Scenario selector UI -->
+  <div id="scenarioPanel" class="esri-widget">
+    <label for="scenarioSelect">Storm scenario</label>
+    <select id="scenarioSelect">
+      <option value="none">No scenario</option>
+      <option value="a">August 1, 2024</option>
+      <option value="b">September 18, 1948</option>
+    </select>
+    <div id="scenarioStatus"></div>
+  </div>
+
+  <!-- App logic -->
+  <script src="app.js"></script>
+</body>
+</html>
