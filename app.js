@@ -66,7 +66,7 @@ require([
         outFields: ["depth_m"],
         renderer: floodAugRenderer,
         opacity: 0.5,
-        minScale: 75000 // hide at city wide zoom
+        minScale: 75000, // hide at city wide zoom
         visible: false   // shown only when the August scenario is selected
     });
     map.add(floodAug);   // added after propertyLayer => sits above it
