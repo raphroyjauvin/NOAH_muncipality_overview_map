@@ -49,7 +49,7 @@ require([
     // ---- Flood bands (August 1, 2024). Added AFTER the parcels so it draws above them. ----
     const floodAugRenderer = {
         type: "unique-value",
-        field: "depth_m",
+        field: "max_depth",
         uniqueValueInfos: [
             { value: 1.5,  label: "1.5 m",  symbol: { type: "simple-fill", color: [132, 0, 168],  outline: { width: 0 } } },
             { value: 1.2,  label: "1.2 m",  symbol: { type: "simple-fill", color: [0, 38, 115],   outline: { width: 0 } } },
@@ -63,7 +63,7 @@ require([
     const floodAug = new FeatureLayer({
         url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/toronto_aug_1_2024_storm_merged_single/FeatureServer/23",
         title: "August 1, 2024 storm",
-        outFields: ["depth_m"],
+        outFields: ["max_depth"],
         renderer: floodAugRenderer,
         opacity: 0.5,
         minScale: 75000, // hide at city wide zoom
