@@ -61,11 +61,12 @@ require([
     };
 
     const floodAug = new FeatureLayer({
-        url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/toronto_aug_1_2024_storm_merged/FeatureServer/22",
+        url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/toronto_aug_1_2024_storm_merged_single/FeatureServer/23",
         title: "August 1, 2024 storm",
         outFields: ["depth_m"],
         renderer: floodAugRenderer,
         opacity: 0.5,
+        minScale: 75000 // hide at city wide zoom
         visible: false   // shown only when the August scenario is selected
     });
     map.add(floodAug);   // added after propertyLayer => sits above it
@@ -83,9 +84,12 @@ require([
 
     // Legend: flood event + depths only
     view.ui.add(new Legend({
-        view: view,
-        layerInfos: [{ layer: floodAug }]
-    }), "bottom-right");
+    view: view,
+    layerInfos: [
+        { layer: floodAug },
+        { layer: propertyLayer }
+    ]
+}), "bottom-right");
 
     // ---- Property symbology ----
     const grayOutline      = { color: [179, 179, 179], width: 0.75 };
