@@ -61,7 +61,7 @@ require([
     };
 
     const floodAug = new FeatureLayer({
-        url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/toronto_aug_1_2024_storm_merged/FeatureServer/0",
+        url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/toronto_aug_1_2024_storm_merged/FeatureServer/22",
         title: "August 1, 2024 storm",
         outFields: ["depth_m"],
         renderer: floodAugRenderer,
