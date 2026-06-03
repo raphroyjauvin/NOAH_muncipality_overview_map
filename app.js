@@ -20,7 +20,7 @@ require([
         url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/Toronto_Municipality_Overview_Map_Demo1/FeatureServer/1",
         title: "Property parcels",
         outFields: ["PARCELID", "FEATURE_TYPE", "ADDRESS", "hazard_score", "infrastructure_score", "max_depth_aug_2024", "max_depth_sep_1948"],
-        minScale: 75000
+        minScale: 20000
     });
     map.add(propertyLayer);
 
