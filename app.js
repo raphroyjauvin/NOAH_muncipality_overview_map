@@ -24,7 +24,7 @@ require([
     });
     map.add(propertyLayer);
 
-    // ---- Address labels: only at 1:1500 or more zoomed in ----
+    // ---- Address labels: only at 1:1500 or closer, "None None" suppressed ----
     propertyLayer.labelingInfo = [{
         labelExpressionInfo: {
             expression: `
@@ -41,10 +41,34 @@ require([
             font: { size: 9, family: "sans-serif" }
         },
         labelPlacement: "always-horizontal",
-        minScale: 1500,   // labels appear only at 1:1500 and closer
+        minScale: 1500,
         maxScale: 0
     }];
     propertyLayer.labelsVisible = true;
+
+    // ---- Flood bands (August 1, 2024). Added AFTER the parcels so it draws above them. ----
+    const floodAugRenderer = {
+        type: "unique-value",
+        field: "depth_m",
+        uniqueValueInfos: [
+            { value: 1.5,  label: "1.5 m",  symbol: { type: "simple-fill", color: [132, 0, 168],  outline: { width: 0 } } },
+            { value: 1.2,  label: "1.2 m",  symbol: { type: "simple-fill", color: [0, 38, 115],   outline: { width: 0 } } },
+            { value: 0.8,  label: "0.8 m",  symbol: { type: "simple-fill", color: [0, 77, 168],   outline: { width: 0 } } },
+            { value: 0.4,  label: "0.4 m",  symbol: { type: "simple-fill", color: [0, 112, 255],  outline: { width: 0 } } },
+            { value: 0.3,  label: "0.3 m",  symbol: { type: "simple-fill", color: [115, 178, 255], outline: { width: 0 } } },
+            { value: 0.15, label: "0.15 m", symbol: { type: "simple-fill", color: [190, 210, 255], outline: { width: 0 } } }
+        ]
+    };
+
+    const floodAug = new FeatureLayer({
+        url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/toronto_aug_1_2024_storm_merged/FeatureServer/0",
+        title: "August 1, 2024 storm",
+        outFields: ["depth_m"],
+        renderer: floodAugRenderer,
+        opacity: 0.5,
+        visible: false   // shown only when the August scenario is selected
+    });
+    map.add(floodAug);   // added after propertyLayer => sits above it
 
     const view = new MapView({
         container: "viewDiv",
@@ -57,13 +81,13 @@ require([
     view.ui.add(new Search({ view: view }), "top-right");
     view.ui.add(new BasemapToggle({ view: view, nextBasemap: "hybrid" }), "bottom-left");
 
-    // Legend: only the property parcels layer
+    // Legend: flood event + depths only
     view.ui.add(new Legend({
         view: view,
-        layerInfos: [{ layer: propertyLayer }]
+        layerInfos: [{ layer: floodAug }]
     }), "bottom-right");
 
-    // ---- Symbology ----
+    // ---- Property symbology ----
     const grayOutline      = { color: [179, 179, 179], width: 0.75 };
     const notFloodedSymbol = { type: "simple-fill", style: "none", outline: grayOutline };
     const floodedSymbol    = { type: "simple-fill", color: [231, 76, 60, 0.25], outline: grayOutline };
@@ -116,12 +140,16 @@ require([
         if (scenario === "none") {
             propertyLayer.renderer = neutralRenderer;
             propertyLayer.popupTemplate = popupNone;
+            floodAug.visible = false;
         } else if (scenario === "a") {
             propertyLayer.renderer = rendererA;
             propertyLayer.popupTemplate = popupA;
-        } else {
+            floodAug.visible = true;
+        } else {  // "b" - September; flood layer not ready yet
             propertyLayer.renderer = rendererB;
             propertyLayer.popupTemplate = popupB;
+            floodAug.visible = false;
+            // floodSep.visible = true;   // wire when the September layer is published
         }
     }
 
