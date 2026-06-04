@@ -17,7 +17,7 @@ require([
     const map = new Map({ basemap: "gray-vector" });
 
     const propertyLayer = new FeatureLayer({
-        url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/Toronto_Municipality_Overview_Map_Demo1/FeatureServer/25",
+        url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/Toronto_Municipality_Overview_Map_Demo1/FeatureServer/1",
         title: "Property parcels",
         outFields: ["PARCELID", "FEATURE_TYPE", "ADDRESS", "hazard_score", "infrastructure_score", "max_depth_aug_2024", "max_depth_sep_1948"],
         minScale: 20000
@@ -46,7 +46,8 @@ require([
     }];
     propertyLayer.labelsVisible = true;
 
-    // ---- Flood bands (August 1, 2024). Added AFTER the parcels so it draws above them. ----
+    // ---- Flood band renderers. Identical colours; only the shallow band value differs:
+    //      August floor = 0.15 m, September floor = 0.1 m. ----
     const floodAugRenderer = {
         type: "unique-value",
         field: "max_depth",
@@ -60,16 +61,40 @@ require([
         ]
     };
 
+    const floodSepRenderer = {
+        type: "unique-value",
+        field: "max_depth",
+        uniqueValueInfos: [
+            { value: 1.5,  label: "1.5 m",  symbol: { type: "simple-fill", color: [132, 0, 168],  outline: { width: 0 } } },
+            { value: 1.2,  label: "1.2 m",  symbol: { type: "simple-fill", color: [0, 38, 115],   outline: { width: 0 } } },
+            { value: 0.8,  label: "0.8 m",  symbol: { type: "simple-fill", color: [0, 77, 168],   outline: { width: 0 } } },
+            { value: 0.4,  label: "0.4 m",  symbol: { type: "simple-fill", color: [0, 112, 255],  outline: { width: 0 } } },
+            { value: 0.3,  label: "0.3 m",  symbol: { type: "simple-fill", color: [115, 178, 255], outline: { width: 0 } } },
+            { value: 0.1,  label: "0.1 m",  symbol: { type: "simple-fill", color: [190, 210, 255], outline: { width: 0 } } }
+        ]
+    };
+
     const floodAug = new FeatureLayer({
         url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/toronto_aug_1_2024_storm_merged_single/FeatureServer/23",
         title: "August 1, 2024 storm",
         outFields: ["max_depth"],
         renderer: floodAugRenderer,
         opacity: 0.5,
-        minScale: 75000, // hide at city wide zoom
-        visible: false   // shown only when the August scenario is selected
+        minScale: 75000,
+        visible: false
     });
-    map.add(floodAug);   // added after propertyLayer => sits above it
+    map.add(floodAug);
+
+    const floodSep = new FeatureLayer({
+        url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/sep_18_1948_storm/FeatureServer/42",
+        title: "September 18, 1948 storm",
+        outFields: ["max_depth"],
+        renderer: floodSepRenderer,
+        opacity: 0.5,
+        minScale: 75000,
+        visible: false
+    });
+    map.add(floodSep);
 
     const view = new MapView({
         container: "viewDiv",
@@ -82,14 +107,15 @@ require([
     view.ui.add(new Search({ view: view }), "top-right");
     view.ui.add(new BasemapToggle({ view: view, nextBasemap: "hybrid" }), "bottom-left");
 
-    // Legend: flood event + depths only
+    // Legend: whichever flood layer is visible shows; parcels always.
     view.ui.add(new Legend({
-    view: view,
-    layerInfos: [
-        { layer: floodAug },
-        { layer: propertyLayer }
-    ]
-}), "bottom-right");
+        view: view,
+        layerInfos: [
+            { layer: floodAug },
+            { layer: floodSep },
+            { layer: propertyLayer }
+        ]
+    }), "bottom-right");
 
     // ---- Property symbology ----
     const grayOutline      = { color: [179, 179, 179], width: 0.75 };
@@ -145,15 +171,17 @@ require([
             propertyLayer.renderer = neutralRenderer;
             propertyLayer.popupTemplate = popupNone;
             floodAug.visible = false;
+            floodSep.visible = false;
         } else if (scenario === "a") {
             propertyLayer.renderer = rendererA;
             propertyLayer.popupTemplate = popupA;
             floodAug.visible = true;
-        } else {  // "b" - September; flood layer not ready yet
+            floodSep.visible = false;
+        } else {  // "b" - September
             propertyLayer.renderer = rendererB;
             propertyLayer.popupTemplate = popupB;
             floodAug.visible = false;
-            // floodSep.visible = true;   // wire when the September layer is published
+            floodSep.visible = true;
         }
     }
 
