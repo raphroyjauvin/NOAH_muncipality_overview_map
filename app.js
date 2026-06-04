@@ -17,7 +17,7 @@ require([
     const map = new Map({ basemap: "gray-vector" });
 
     const propertyLayer = new FeatureLayer({
-        url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/Toronto_Municipality_Overview_Map_Demo1/FeatureServer/1",
+        url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/Toronto_Municipality_Overview_Map_Demo1/FeatureServer/25",
         title: "Property parcels",
         outFields: ["PARCELID", "FEATURE_TYPE", "ADDRESS", "hazard_score", "infrastructure_score", "max_depth_aug_2024", "max_depth_sep_1948"],
         minScale: 20000
@@ -86,7 +86,7 @@ require([
     map.add(floodAug);
 
     const floodSep = new FeatureLayer({
-        url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/sep_18_1948_storm/FeatureServer/42",
+        url: "https://services1.arcgis.com/KsnB2VOAvO5LjdB4/arcgis/rest/services/sept_1948_storm_complete/FeatureServer/86",
         title: "September 18, 1948 storm",
         outFields: ["max_depth"],
         renderer: floodSepRenderer,
